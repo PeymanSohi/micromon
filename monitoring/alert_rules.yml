@@ -1,0 +1,12 @@
+groups:
+- name: BackendHealth
+  rules:
+  - alert: BackendDown
+    expr: probe_success == 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Backend service is down"
+      description: "The /health endpoint is unreachable."
+
