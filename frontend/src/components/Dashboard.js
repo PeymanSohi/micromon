@@ -1,161 +1,145 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, Table, Spin, Alert } from 'antd';
+import { Card, Row, Col, Statistic, Table, Alert, Spin } from 'antd';
 import { Line } from '@ant-design/plots';
-import { 
-  UserOutlined, 
-  AlertOutlined, 
-  DatabaseOutlined, 
-  ClockCircleOutlined 
-} from '@ant-design/icons';
+import { metricsService, alertService } from '../services/api';
 
 const Dashboard = () => {
+  const [metrics, setMetrics] = useState(null);
+  const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [metrics, setMetrics] = useState({
-    cpu: [],
-    memory: [],
-    disk: [],
-    alerts: []
-  });
-  const [systemStats, setSystemStats] = useState({
-    users: 0,
-    activeAlerts: 0,
-    databaseSize: '0 MB',
-    uptime: '0 days'
-  });
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchMetrics = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/metrics');
-        const data = await response.json();
-        setMetrics(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching metrics:', error);
+        setLoading(true);
+        const [metricsData, alertsData] = await Promise.all([
+          metricsService.getSystemMetrics(),
+          alertService.getAlerts()
+        ]);
+        setMetrics(metricsData);
+        setAlerts(alertsData);
+      } catch (err) {
+        setError('Failed to fetch dashboard data');
+        console.error(err);
+      } finally {
         setLoading(false);
       }
     };
 
-    const fetchSystemStats = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/system-stats');
-        const data = await response.json();
-        setSystemStats(data);
-      } catch (error) {
-        console.error('Error fetching system stats:', error);
-      }
-    };
-
-    fetchMetrics();
-    fetchSystemStats();
-    const interval = setInterval(() => {
-      fetchMetrics();
-      fetchSystemStats();
-    }, 30000);
+    fetchData();
+    const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
 
     return () => clearInterval(interval);
   }, []);
 
-  const config = {
-    data: metrics.cpu,
-    xField: 'time',
-    yField: 'value',
-    seriesField: 'type',
-    smooth: true,
-    animation: {
-      appear: {
-        animation: 'path-in',
-        duration: 1000,
-      },
-    },
-  };
-
   const columns = [
     {
-      title: 'Alert',
-      dataIndex: 'message',
-      key: 'message',
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
       title: 'Severity',
       dataIndex: 'severity',
       key: 'severity',
       render: (severity) => (
-        <span style={{ 
-          color: severity === 'high' ? 'red' : 
-                 severity === 'medium' ? 'orange' : 'green' 
+        <span style={{
+          color: severity === 'high' ? 'red' : severity === 'medium' ? 'orange' : 'green'
         }}>
-          {severity}
+          {severity.toUpperCase()}
         </span>
       ),
     },
     {
-      title: 'Time',
-      dataIndex: 'time',
-      key: 'time',
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+    },
+    {
+      title: 'Created At',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (date) => new Date(date).toLocaleString(),
     },
   ];
 
   if (loading) {
-    return <Spin size="large" />;
+    return (
+      <div style={{ textAlign: 'center', padding: '50px' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <Alert message={error} type="error" showIcon />;
   }
 
   return (
-    <div className="dashboard">
+    <div style={{ padding: '24px' }}>
       <Row gutter={[16, 16]}>
-        <Col span={6}>
+        <Col span={8}>
           <Card>
             <Statistic
-              title="Active Users"
-              value={systemStats.users}
-              prefix={<UserOutlined />}
+              title="CPU Usage"
+              value={metrics?.cpu?.value}
+              suffix="%"
+              precision={2}
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col span={8}>
           <Card>
             <Statistic
-              title="Active Alerts"
-              value={systemStats.activeAlerts}
-              prefix={<AlertOutlined />}
+              title="Memory Usage"
+              value={metrics?.memory?.value}
+              suffix="%"
+              precision={2}
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col span={8}>
           <Card>
             <Statistic
-              title="Database Size"
-              value={systemStats.databaseSize}
-              prefix={<DatabaseOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="System Uptime"
-              value={systemStats.uptime}
-              prefix={<ClockCircleOutlined />}
+              title="Disk Usage"
+              value={metrics?.disk?.value}
+              suffix="%"
+              precision={2}
             />
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} style={{ marginTop: '20px' }}>
+      <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
         <Col span={24}>
-          <Card title="CPU Usage">
-            <Line {...config} />
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} style={{ marginTop: '20px' }}>
-        <Col span={24}>
-          <Card title="Recent Alerts">
-            <Table 
-              dataSource={metrics.alerts} 
-              columns={columns} 
+          <Card title="Active Alerts">
+            <Table
+              dataSource={alerts}
+              columns={columns}
+              rowKey="id"
               pagination={false}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
+        <Col span={24}>
+          <Card title="System Metrics History">
+            <Line
+              data={[
+                { time: '00:00', value: 10, category: 'CPU' },
+                { time: '01:00', value: 15, category: 'CPU' },
+                { time: '02:00', value: 20, category: 'CPU' },
+                { time: '00:00', value: 30, category: 'Memory' },
+                { time: '01:00', value: 35, category: 'Memory' },
+                { time: '02:00', value: 40, category: 'Memory' },
+              ]}
+              xField="time"
+              yField="value"
+              seriesField="category"
+              smooth
             />
           </Card>
         </Col>
