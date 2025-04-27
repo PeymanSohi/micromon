@@ -1,8 +1,8 @@
 -- Create the database
-CREATE DATABASE IF NOT EXISTS app_db;
+CREATE DATABASE IF NOT EXISTS micromon;
 
 -- Switch to the new database
-USE app_db;
+USE micromon;
 
 -- Create the users table
 CREATE TABLE IF NOT EXISTS users (
