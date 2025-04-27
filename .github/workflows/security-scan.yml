@@ -19,12 +19,14 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        cache: 'npm'
     
-    - name: Install dependencies
-      run: |
-        cd frontend && npm ci
-        cd ../backend && npm ci
+    - name: Install Frontend Dependencies
+      working-directory: ./frontend
+      run: npm install
+    
+    - name: Install Backend Dependencies
+      working-directory: ./backend
+      run: npm install
     
     - name: Run Snyk to check for vulnerabilities (Frontend)
       uses: snyk/actions/node@master
