@@ -7,6 +7,12 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
+// Log environment variables
+console.log('Environment Variables:');
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_USERNAME:', process.env.DB_USERNAME);
+console.log('DB_DATABASE:', process.env.DB_DATABASE);
+
 // Enable CORS
 app.use(cors());
 app.use(bodyParser.json());

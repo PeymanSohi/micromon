@@ -1,0 +1,6 @@
+[client]
+user=${MYSQL_USER}
+password=${MYSQL_PASSWORD}
+host=mysql
+port=3306
+database=${MYSQL_DATABASE} 

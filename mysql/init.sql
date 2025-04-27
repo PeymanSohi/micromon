@@ -18,3 +18,9 @@ VALUES
   ('${ADMIN_USERNAME}', '${ADMIN_PASSWORD}', 'admin'),
   ('${USER_USERNAME}', '${USER_PASSWORD}', 'user');
 
+-- Grant necessary permissions for metrics collection
+GRANT PROCESS, REPLICATION CLIENT ON *.* TO '${MYSQL_USER}'@'%';
+GRANT SELECT ON performance_schema.* TO '${MYSQL_USER}'@'%';
+GRANT SELECT ON micromon.* TO '${MYSQL_USER}'@'%';
+FLUSH PRIVILEGES;
+

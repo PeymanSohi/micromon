@@ -9,6 +9,8 @@ services:
     restart: always
     env_file:
       - .env
+    volumes:
+      - ./.env:/usr/src/app/.env
     ports:
       - "3000:3000"
     depends_on:
@@ -48,10 +50,10 @@ services:
 
   # ===================== MYSQL EXPORTER =====================
   mysqld-exporter:
-    image: prom/mysqld-exporter
+    image: prom/mysqld-exporter:v0.14.0
     container_name: mysqld-exporter
     environment:
-      DATA_SOURCE_NAME: "${MYSQL_USER}:${MYSQL_PASSWORD}@(mysql:3306)/"
+      - DATA_SOURCE_NAME=root:rootpassword@(mysql:3306)/
     ports:
       - "9104:9104"
     depends_on:
