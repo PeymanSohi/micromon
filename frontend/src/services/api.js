@@ -181,4 +181,19 @@ export const notificationService = {
   },
 };
 
+export const systemHealthService = {
+  getMetrics: async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/system-health');
+      if (!response.ok) {
+        throw new Error('Failed to fetch system health metrics');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching system health metrics:', error);
+      throw error;
+    }
+  },
+};
+
 export default api; 

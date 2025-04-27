@@ -14,7 +14,7 @@ import {
   SettingOutlined, 
   NotificationOutlined, 
   DatabaseOutlined,
-  SecurityOutlined
+  SafetyOutlined
 } from '@ant-design/icons';
 
 const { Option } = Select;
@@ -215,7 +215,7 @@ const Settings = () => {
         <TabPane
           tab={
             <span>
-              <SecurityOutlined />
+              <SafetyOutlined />
               Security
             </span>
           }
