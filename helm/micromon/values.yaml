@@ -1,0 +1,74 @@
+# Global values
+global:
+  environment: production
+
+# Backend configuration
+backend:
+  replicaCount: 2
+  image:
+    repository: peymansohi/simple-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  env:
+    NODE_ENV: production
+    PORT: 3000
+
+# Frontend configuration
+frontend:
+  replicaCount: 2
+  image:
+    repository: peymansohi/simple-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+# MySQL configuration
+mysql:
+  enabled: true
+  image:
+    repository: mysql
+    tag: 8.0
+  auth:
+    rootPassword: "root"
+    database: "micromon"
+    username: "micromon"
+    password: "micromon"
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  persistence:
+    enabled: true
+    size: 8Gi
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+  alertmanager:
+    enabled: true 

@@ -1,0 +1,25 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To access your application:
+
+1. Get the application URL by running these commands:
+   {{- if .Values.frontend.service.type }}
+   {{- if eq .Values.frontend.service.type "LoadBalancer" }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+     You can watch the status of by running 'kubectl get svc -w {{ .Release.Name }}-frontend'
+   {{- end }}
+   {{- end }}
+
+2. Access the application:
+   Frontend: http://{{ .Release.Name }}-frontend.{{ .Release.Namespace }}.svc.cluster.local
+   Backend: http://{{ .Release.Name }}-backend.{{ .Release.Namespace }}.svc.cluster.local:3000
+
+3. Access monitoring tools:
+   Prometheus: http://prometheus.{{ .Release.Namespace }}.svc.cluster.local:9090
+   Grafana: http://grafana.{{ .Release.Namespace }}.svc.cluster.local:3000
+   Alertmanager: http://alertmanager.{{ .Release.Namespace }}.svc.cluster.local:9093
+
+For more information about {{ .Chart.Name }}, visit:
+https://github.com/yourusername/micromon 
