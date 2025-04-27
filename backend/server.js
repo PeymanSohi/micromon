@@ -2,10 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 const port = 3000;
 
+// Enable CORS
+app.use(cors());
 app.use(bodyParser.json());
 
 // Create MySQL connection pool
@@ -48,6 +51,11 @@ async function createUsers() {
     connection.release();
   }
 }
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to the MicroMon API' });
+});
 
 // Health Check
 app.get('/health', (req, res) => {

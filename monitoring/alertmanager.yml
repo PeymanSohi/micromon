@@ -2,12 +2,19 @@ global:
   resolve_timeout: 5m
 
 route:
-  receiver: 'slack-notifications'
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'email-notifications'
 
 receivers:
-- name: 'slack-notifications'
-  slack_configs:
-  - api_url: '${SLACK_WEBHOOK_URL}'
-    channel: '${SLACK_CHANNEL}'
-    text: "🚨 *Alert* \n\n *{{ .CommonAnnotations.summary }}* \n *Description:* {{ .CommonAnnotations.description }} \n *Status:* {{ .Status }}"
+- name: 'email-notifications'
+  email_configs:
+  - to: '${ALERT_EMAIL}'
+    from: '${ALERT_EMAIL}'
+    smarthost: 'smtp.gmail.com:587'
+    auth_username: '${ALERT_EMAIL}'
+    auth_password: '${ALERT_EMAIL_PASSWORD}'
+    send_resolved: true
 

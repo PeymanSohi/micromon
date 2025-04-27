@@ -10,3 +10,52 @@ groups:
       summary: "Backend service is down"
       description: "The /health endpoint is unreachable."
 
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High error rate on backend"
+      description: "Error rate is above 10% for the last 5 minutes"
+
+- name: MySQLHealth
+  rules:
+  - alert: MySQLDown
+    expr: mysql_up == 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "MySQL is down"
+      description: "MySQL exporter cannot connect to the database"
+
+  - alert: HighMySQLConnections
+    expr: mysql_global_status_threads_connected > 100
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High number of MySQL connections"
+      description: "Number of MySQL connections is above 100 for 5 minutes"
+
+- name: SystemHealth
+  rules:
+  - alert: HighCPUUsage
+    expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage"
+      description: "CPU usage is above 80% for 5 minutes"
+
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage"
+      description: "Memory usage is above 85% for 5 minutes"
+
