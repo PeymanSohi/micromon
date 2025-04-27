@@ -1,154 +1,217 @@
-# 🚀 Login and Monitoring Project
+# MicroMon - Modern Monitoring Dashboard
 
-This project is a **full-stack DevOps monitoring setup** with:
-- **React** frontend login page
-- **Node.js** backend API
-- **MySQL** database for user management
-- **Prometheus**, **Grafana**, **Alertmanager** monitoring stack
-- **Slack notifications** if backend `/health` goes down
-- **Docker Compose** deployment
+MicroMon is a comprehensive monitoring and management dashboard that provides real-time system metrics, user management, alert management, and system configuration capabilities.
 
----
+## Features
 
-## 📂 Project Structure
+- **Real-time Dashboard**
+  - System metrics visualization (CPU, Memory, Disk)
+  - Active alerts display
+  - System statistics overview
+  - Real-time data updates
 
-```
-.
-├── backend/       # Node.js backend
-├── frontend/      # React frontend
-├── mysql/         # MySQL database + init.sql
-├── prometheus/    # Prometheus configuration
-├── grafana/       # Grafana dashboards
-├── alertmanager/  # Alertmanager config (Slack)
-├── blackbox/      # Blackbox Exporter for backend health checks
-├── docker-compose.yml
-├── .env
-└── README.md
-```
+- **User Management**
+  - Role-based access control (Admin, Manager, User)
+  - User status management
+  - CRUD operations for users
+  - Email and username validation
 
----
+- **Alert Management**
+  - Custom alert creation and configuration
+  - Severity levels (High, Medium, Low)
+  - Alert enabling/disabling
+  - Alert history and status tracking
 
-## ✨ Features
+- **System Settings**
+  - General system configuration
+  - Notification preferences
+  - Database backup settings
+  - Security settings including 2FA
 
-- **Frontend (React)**  
-  - Simple login page
-  - Displays "Hello Admin" or "Hello User" after login
-- **Backend (Node.js)**  
-  - `/login` endpoint checks credentials from MySQL database
-  - `/health` endpoint for uptime monitoring
-- **MySQL**  
-  - Stores users (admin and normal user)
-- **Monitoring**  
-  - Prometheus scrapes backend health, MySQL metrics
-  - Grafana shows live CPU, memory, service status
-  - Slack alert when backend `/health` fails
-- **Fully Dockerized** with Compose!
+## Tech Stack
 
----
+- **Frontend**
+  - React 18
+  - Ant Design 5
+  - React Router 6
+  - Axios
+  - Ant Design Charts
 
-## 🛠 Setup Instructions
+- **Backend**
+  - Node.js
+  - Express
+  - MySQL
+  - Prometheus
+  - AlertManager
 
-### 1. Clone the repository
+- **Monitoring**
+  - Prometheus
+  - Grafana
+  - Node Exporter
+  - MySQL Exporter
+  - Blackbox Exporter
 
+## Prerequisites
+
+- Docker and Docker Compose
+- Node.js 18+
+- MySQL 8.0
+- Git
+
+## Installation
+
+1. Clone the repository:
 ```bash
-git clone https://github.com/peymansohi/login-monitoring.git
-cd login-monitoring
+git clone https://github.com/yourusername/micromon.git
+cd micromon
 ```
 
----
+2. Create environment file:
+```bash
+cp .env.example .env
+```
 
-### 2. Configure environment variables
-
-Create a `.env` file:
-
+3. Update the `.env` file with your configuration:
 ```env
-# MySQL
-MYSQL_ROOT_PASSWORD=rootpassword
-MYSQL_DATABASE=app_db
-MYSQL_USER=app_user
-MYSQL_PASSWORD=app_password
+# Database Configuration
+MYSQL_ROOT_PASSWORD=your_root_password
+MYSQL_DATABASE=micromon
+MYSQL_USER=micromon_user
+MYSQL_PASSWORD=your_password
 
-# Backend
-DB_HOST=mysql
-DB_PORT=3306
-DB_DATABASE=app_db
-DB_USERNAME=app_user
-DB_PASSWORD=app_password
+# Backend Configuration
+NODE_ENV=production
+PORT=3000
 
-# Users (used by SQL script)
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin123
-USER_USERNAME=user
-USER_PASSWORD=user123
-
-# Slack webhook URL for alerts
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/your/slack/webhook
+# Frontend Configuration
+REACT_APP_API_URL=http://localhost:3000
 ```
 
-> ⚠️ Replace `SLACK_WEBHOOK_URL` with your actual Slack webhook.
-
----
-
-### 3. Start the stack
-
+4. Build and start the containers:
 ```bash
 docker-compose up --build
 ```
 
-- Frontend available at: **http://localhost**
-- Backend API at: **http://localhost:3000**
-- MySQL at: **localhost:3306**
+The application will be available at:
+- Frontend: http://localhost
+- Backend API: http://localhost:3000
+- Grafana: http://localhost:3001
+- Prometheus: http://localhost:9090
 
----
+## Development Setup
 
-## 🔒 Default Credentials
+1. Install frontend dependencies:
+```bash
+cd frontend
+npm install
+```
 
-| Role   | Username | Password |
-|--------|----------|----------|
-| Admin  | admin    | admin123 |
-| Normal | user     | user123  |
+2. Install backend dependencies:
+```bash
+cd backend
+npm install
+```
 
----
+3. Start the development servers:
+```bash
+# Terminal 1 - Backend
+cd backend
+npm run dev
 
-## 📈 Monitoring URLs
+# Terminal 2 - Frontend
+cd frontend
+npm start
+```
 
-- **Prometheus** ➔ [http://localhost:9090](http://localhost:9090)
-- **Grafana** ➔ [http://localhost:3001](http://localhost:3001)
-- **Alertmanager** ➔ [http://localhost:9093](http://localhost:9093)
+## Security Scanning
 
-> Grafana login:  
-> **Username:** `admin`  
-> **Password:** `admin`
+The project includes automated security scanning using:
+- Snyk for dependency vulnerability scanning
+- SonarQube for code quality analysis
+- OWASP Dependency Check for security analysis
 
----
+To run security scans locally:
 
-## 📊 Grafana Dashboards
+```bash
+# Install Snyk CLI
+npm install -g snyk
 
-- **CPU Usage**
-- **Memory Usage**
-- **Container Health**
-- **Backend /health endpoint monitoring**
+# Run Snyk scan
+cd frontend
+snyk test
+cd ../backend
+snyk test
 
----
+# Run OWASP Dependency Check
+docker run --rm \
+  -e user=$USER \
+  -u $(id -u ${USER}):$(id -g ${USER}) \
+  --volume $(pwd):/src:z \
+  --volume $(pwd)/reports:/report:z \
+  owasp/dependency-check:latest \
+  --scan /src \
+  --format "HTML" \
+  --project "MicroMon" \
+  --out /report
+```
 
-## 🔔 Slack Alerts
+## API Documentation
 
-Slack alert sent when:
-- Backend `/health` endpoint is DOWN
-- Prometheus detects service unavailability
+### Authentication
+- `POST /login` - User login
+- `POST /logout` - User logout
 
----
+### Users
+- `GET /users` - Get all users
+- `POST /users` - Create new user
+- `PUT /users/:id` - Update user
+- `DELETE /users/:id` - Delete user
 
-## 🐳 Services Overview (Docker Compose)
+### Alerts
+- `GET /alerts` - Get all alerts
+- `POST /alerts` - Create new alert
+- `PUT /alerts/:id` - Update alert
+- `DELETE /alerts/:id` - Delete alert
+- `PUT /alerts/:id/toggle` - Toggle alert status
 
-| Service       | Image                       | Port    |
-|---------------|------------------------------|---------|
-| frontend      | nginx + React static build   | 80      |
-| backend       | Node.js Express API          | 3000    |
-| mysql         | MySQL 8.0                    | 3306    |
-| prometheus    | Prometheus                   | 9090    |
-| grafana       | Grafana                      | 3001    |
-| alertmanager  | Alertmanager                 | 9093    |
-| blackbox      | Blackbox Exporter            | 9115    |
+### Metrics
+- `GET /metrics` - Get system metrics
+- `GET /system-stats` - Get system statistics
 
----
+### Settings
+- `GET /settings` - Get system settings
+- `PUT /settings` - Update system settings
+
+## Monitoring Setup
+
+1. Access Grafana at http://localhost:3001
+   - Default credentials: admin/admin
+   - Change password on first login
+
+2. Configure Prometheus data source in Grafana:
+   - URL: http://prometheus:9090
+   - Access: Server
+
+3. Import default dashboards:
+   - System Metrics
+   - Alert Status
+   - User Activity
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [Ant Design](https://ant.design/) for the UI components
+- [Prometheus](https://prometheus.io/) for monitoring
+- [Grafana](https://grafana.com/) for visualization
+- [Snyk](https://snyk.io/) for security scanning
