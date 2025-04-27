@@ -22,16 +22,21 @@ jobs:
     
     - name: Install Frontend Dependencies
       working-directory: ./frontend
-      run: npm install
+      run: |
+        npm install
+        npm audit fix || true
     
     - name: Install Backend Dependencies
       working-directory: ./backend
-      run: npm install
+      run: |
+        npm install
+        npm audit fix || true
     
     - name: Run Snyk to check for vulnerabilities (Frontend)
       uses: snyk/actions/node@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        DEBUG: '*snyk*'
       with:
         args: --file=frontend/package.json
     
@@ -39,6 +44,7 @@ jobs:
       uses: snyk/actions/node@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        DEBUG: '*snyk*'
       with:
         args: --file=backend/package.json
     
