@@ -26,12 +26,12 @@ jobs:
         with:
           context: ./backend
           push: false
-          tags: yourdockerhubusername/simple-backend:latest
+          tags: peymansohi/simple-backend:latest
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           push: false
-          tags: yourdockerhubusername/simple-frontend:latest
+          tags: peymansohi/simple-frontend:latest
 
