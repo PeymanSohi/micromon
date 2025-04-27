@@ -35,9 +35,11 @@ const Login = () => {
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="username">Username</label>
           <input
+            id="username"
             type="text"
-            placeholder="Username"
+            placeholder="Enter your username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -45,9 +47,11 @@ const Login = () => {
           />
         </div>
         <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="password">Password</label>
           <input
+            id="password"
             type="password"
-            placeholder="Password"
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Login from '../Login';
 
 // Mock the fetch function
@@ -40,15 +40,17 @@ describe('Login Component', () => {
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
     
     // Check if fetch was called with the correct data
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3000/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: 'testuser',
-        password: 'password123',
-      }),
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: 'testuser',
+          password: 'password123',
+        }),
+      });
     });
   });
 

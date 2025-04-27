@@ -33,12 +33,12 @@ jobs:
         npm audit fix || true
     
     - name: Authenticate Snyk
-      uses: snyk/actions/auth@master
+      uses: snyk/actions@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     
     - name: Run Snyk to check for vulnerabilities (Frontend)
-      uses: snyk/actions/node@master
+      uses: snyk/actions@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         DEBUG: '*snyk*'
@@ -46,7 +46,7 @@ jobs:
         args: --file=frontend/package.json --org=${{ secrets.SNYK_ORG }}
     
     - name: Run Snyk to check for vulnerabilities (Backend)
-      uses: snyk/actions/node@master
+      uses: snyk/actions@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         DEBUG: '*snyk*'
