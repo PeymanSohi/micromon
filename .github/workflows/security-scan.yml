@@ -15,12 +15,30 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Run Snyk to check for vulnerabilities
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: |
+        cd frontend && npm ci
+        cd ../backend && npm ci
+    
+    - name: Run Snyk to check for vulnerabilities (Frontend)
       uses: snyk/actions/node@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        args: --all-projects
+        args: --file=frontend/package.json
+    
+    - name: Run Snyk to check for vulnerabilities (Backend)
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --file=backend/package.json
     
     - name: Run SonarQube Scan
       uses: SonarSource/sonarqube-scan-action@master
