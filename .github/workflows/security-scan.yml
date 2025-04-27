@@ -32,13 +32,18 @@ jobs:
         npm install
         npm audit fix || true
     
+    - name: Authenticate Snyk
+      uses: snyk/actions/auth@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    
     - name: Run Snyk to check for vulnerabilities (Frontend)
       uses: snyk/actions/node@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         DEBUG: '*snyk*'
       with:
-        args: --file=frontend/package.json
+        args: --file=frontend/package.json --org=${{ secrets.SNYK_ORG }}
     
     - name: Run Snyk to check for vulnerabilities (Backend)
       uses: snyk/actions/node@master
@@ -46,7 +51,7 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         DEBUG: '*snyk*'
       with:
-        args: --file=backend/package.json
+        args: --file=backend/package.json --org=${{ secrets.SNYK_ORG }}
     
     - name: Run SonarQube Scan
       uses: SonarSource/sonarqube-scan-action@master

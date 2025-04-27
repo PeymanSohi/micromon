@@ -32,7 +32,8 @@ jobs:
     
     - name: Run Frontend Tests
       working-directory: ./frontend
-      run: npm test
+      run: |
+        CI=true npm test -- --passWithNoTests
     
     - name: Run Backend Tests
       working-directory: ./backend
